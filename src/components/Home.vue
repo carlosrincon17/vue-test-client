@@ -5,7 +5,7 @@
               :steps="steps"
               :onNext="nextClicked"
               :onBack="backClicked"
-              finalStepLabel="finished">
+              finalStepLabel="Exit">
         <div slot="page-business">
           <h4>Business Info</h4>
           <div class="row">
@@ -82,7 +82,7 @@
                   <label for="business-name">Postal Code</label>
                   <input type="number" class="form-control" id="postal-code-o" placeholder="Postal code" v-model="loan.owner.postal_code">
                 </div>
-                <div class="row"  v-if="requiredField !== ''">
+                <div class="row"  v-if="requiredField !== '' && requiredField !== null">
                   <div class="col-md-12 alert alert-danger text-center">
                     the field {{requiredField}} is required
                   </div>
@@ -106,11 +106,14 @@
 
 <script>
     import axios from 'axios';
+    import {API_URL} from "../environment";
+    import {USER_LOCAL_STORAGE_KEY} from '../constants/localstorage'
 
     export default {
         name: 'demo',
         data(){
             return {
+                api_module: 'loan',
                 loan: {
                     business: {
                         tax_id: undefined,
@@ -163,7 +166,7 @@
                     if(!this.validateObject(this.loan.owner)){
                         return false;
                     }
-                    axios.post('http://localhost:8888/loan', this.loan)
+                    axios.post(API_URL + this.api_module, this.loan)
                         .then(response => {
                             this.decision = response.data.message;
                         })
@@ -172,9 +175,14 @@
                         })
 
                 }
+                if(currentPage === 2){
+                    localStorage.removeItem(USER_LOCAL_STORAGE_KEY);
+                    location.reload();
+                }
                 return true;
             },
             backClicked(currentPage) {
+                this.requiredField = '';
                 return true;
             },
 

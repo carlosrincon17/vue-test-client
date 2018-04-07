@@ -32,6 +32,7 @@
         submitLogin(){
             this.formSubmitted = true;
             localStorage.setItem(USER_LOCAL_STORAGE_KEY, this.login.email);
+            location.reload();
         }
     }
   }
